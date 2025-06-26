@@ -26,11 +26,11 @@ public class PowerUp {
     }
 
     public void draw(Graphics g) {
-        g.drawImage(imagen, x, y, 20, 20, null);
+        g.drawImage(imagen, x, y, 30, 30, null);
     }
 
     public Rectangle getBounds() {
-        return new Rectangle(x, y, 20, 20);
+        return new Rectangle(x, y, 30, 30);
     }
 
     public Tipo getTipo() {

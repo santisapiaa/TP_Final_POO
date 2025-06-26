@@ -1,8 +1,8 @@
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-import javax.swing.Timer;
 
 public class GamePanel extends JPanel implements ActionListener, KeyListener {
     private Timer timer;
@@ -19,6 +19,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     private int vidas = 3;
     private int enemigosDestruidos = 0;
     private int nivel = 1;
+    private StatsManager statsManager;
+    private JButton restartButton;
 
     public GamePanel(String nombre, Difficulty difficulty) {
         this.playerName = nombre;
@@ -30,6 +32,13 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         bullets = new ArrayList<>();
         powerUps = new ArrayList<>();
         timer = new Timer(15, this);
+        statsManager = new StatsManager();
+        restartButton = new JButton("Reiniciar");
+        restartButton.setBounds(220, 450, 100, 40);
+        restartButton.addActionListener(e -> restartGame());
+        restartButton.setVisible(false);
+        this.setLayout(null);
+        this.add(restartButton);
     }
 
     public void start() {
@@ -53,10 +62,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
     private void playerShoot() {
         if (player.canShoot()) {
-            bullets.add(new Bullet(player.getX() + 12, player.getY()));
+            bullets.add(new Bullet(player.getX() + 16, player.getY()));
             if (player.isDisparoTriple()) {
-                bullets.add(new Bullet(player.getX() + 2, player.getY()));
-                bullets.add(new Bullet(player.getX() + 22, player.getY()));
+                bullets.add(new Bullet(player.getX() + 6, player.getY()));
+                bullets.add(new Bullet(player.getX() + 26, player.getY()));
             }
             player.resetShootCooldown();
         }
@@ -70,7 +79,11 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     private void updateEnemies() {
         enemySpawnCounter++;
         if (enemySpawnCounter % Math.max(10, difficulty.spawnRate - nivel * 2) == 0) {
-            enemies.add(new Enemy(new Random().nextInt(550), 0, difficulty.enemySpeed + nivel));
+            if (new Random().nextDouble() < 0.2) {
+                enemies.add(new ToughEnemy(new Random().nextInt(550), 0, difficulty.enemySpeed + nivel));
+            } else {
+                enemies.add(new BasicEnemy(new Random().nextInt(550), 0, difficulty.enemySpeed + nivel));
+            }
         }
         Iterator<Enemy> it = enemies.iterator();
         while (it.hasNext()) {
@@ -107,13 +120,16 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             while (bi.hasNext()) {
                 Bullet b = bi.next();
                 if (er.intersects(b.getBounds())) {
-                    ei.remove();
+                    enemy.hit();
                     bi.remove();
-                    enemigosDestruidos++;
-                    if (new Random().nextDouble() < 0.1) {
-                        powerUps.add(new PowerUp(enemy.getX(), enemy.getY()));
+                    if (enemy.isDestroyed()) {
+                        ei.remove();
+                        enemigosDestruidos++;
+                        if (new Random().nextDouble() < 0.1) {
+                            powerUps.add(new PowerUp(enemy.getX(), enemy.getY()));
+                        }
+                        if (enemigosDestruidos % 10 == 0) nivel++;
                     }
-                    if (enemigosDestruidos % 10 == 0) nivel++;
                     break;
                 }
             }
@@ -125,14 +141,54 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             player.desactivarEscudo();
         } else {
             vidas--;
-            if (vidas <= 0) gameOver = true;
+            if (vidas <= 0) {
+                gameOver = true;
+            }
         }
+    }
+
+    private void restartGame() {
+        if (gameOver || showStats) {
+            // Verifica si hay estadísticas y si el último registro es idéntico para evitar duplicados
+            if (!statsManager.stats.isEmpty()) {
+                StatsManager.PlayerStats lastStat = statsManager.stats.get(statsManager.stats.size() - 1);
+                if (lastStat.name.equals(playerName) &&
+                        lastStat.enemiesDestroyed == enemigosDestruidos &&
+                        lastStat.levelReached == nivel &&
+                        lastStat.powerUpsUsed == player.getPowerUpsUsados()) {
+                    // No guarda si es duplicado
+                } else {
+                    statsManager.saveStats(playerName, enemigosDestruidos, nivel, player.getPowerUpsUsados());
+                }
+            } else {
+                statsManager.saveStats(playerName, enemigosDestruidos, nivel, player.getPowerUpsUsados());
+            }
+            // Solicita nuevo nombre
+            String nuevoNombre = JOptionPane.showInputDialog(null, "Ingresá tu nombre:");
+            if (nuevoNombre != null && !nuevoNombre.trim().isEmpty()) {
+                this.playerName = nuevoNombre;
+            } else {
+                this.playerName = "Jugador"; // Nombre por defecto si cancelan
+            }
+        }
+        player = new Player(280, 700);
+        enemies.clear();
+        bullets.clear();
+        powerUps.clear();
+        vidas = 3;
+        enemigosDestruidos = 0;
+        nivel = 1;
+        gameOver = false;
+        showStats = false;
+        restartButton.setVisible(false);
+        timer.start();
+        requestFocus();
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        setBackground(new Color(10 * nivel % 255, 0, 30 + 10 * nivel % 100));
+        setBackground(new Color(30 + 10 * nivel % 100, 20, 60 + 10 * nivel % 100));
 
         if (!showStats) {
             player.draw(g);
@@ -151,21 +207,25 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
                 g.drawString("GAME OVER", 180, 350);
                 g.setFont(new Font("Arial", Font.PLAIN, 18));
                 g.drawString("Presioná ENTER para ver estadísticas", 130, 400);
+                restartButton.setVisible(true);
             }
         } else {
             g.setColor(Color.WHITE);
             g.setFont(new Font("Arial", Font.BOLD, 24));
             g.drawString("Estadísticas de " + playerName, 150, 200);
             g.setFont(new Font("Arial", Font.PLAIN, 20));
-            g.drawString("Enemigos destruidos: " + enemigosDestruidos, 180, 250);
-            g.drawString("Nivel alcanzado: " + nivel, 180, 280);
-            g.drawString("PowerUps usados: " + player.getPowerUpsUsados(), 180, 310);
+            g.drawString("Enemigos destruidos: " + enemigosDestruidos, 150, 250);
+            g.drawString("Nivel alcanzado: " + nivel, 150, 280);
+            g.drawString("PowerUps usados: " + player.getPowerUpsUsados(), 150, 310);
+            statsManager.drawStats(g, 350);
+            restartButton.setVisible(true);
         }
     }
 
     public void keyPressed(KeyEvent e) {
         if (gameOver && e.getKeyCode() == KeyEvent.VK_ENTER) {
             showStats = true;
+            restartButton.setVisible(true);
             repaint();
         }
         if (e.getKeyCode() == KeyEvent.VK_LEFT) left = true;

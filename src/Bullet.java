@@ -2,6 +2,7 @@ import java.awt.*;
 
 public class Bullet {
     private int x, y;
+
     public Bullet(int x, int y) {
         this.x = x;
         this.y = y;
@@ -11,12 +12,12 @@ public class Bullet {
 
     public void draw(Graphics g) {
         g.setColor(Color.YELLOW);
-        g.fillRect(x, y, 5, 10);
+        g.fillRect(x, y, 8, 16);
     }
 
     public int getY() { return y; }
 
     public Rectangle getBounds() {
-        return new Rectangle(x, y, 5, 10);
+        return new Rectangle(x, y, 8, 16);
     }
 }
