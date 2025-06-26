@@ -1,6 +1,6 @@
 import java.awt.*;
 
-public class Balas {
+public class Balas implements IDibujable{
     private int x, y;
 
     public Balas(int x, int y) {

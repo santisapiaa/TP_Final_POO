@@ -1,7 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class Jugador {
+public class Jugador implements IDibujable{
     private int x, y;
     private int cooldownDisparo = 0;
     private boolean escudo = false;

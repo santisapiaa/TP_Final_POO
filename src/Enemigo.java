@@ -1,6 +1,6 @@
 import java.awt.*;
 
-public abstract class Enemigo {
+public abstract class Enemigo implements IDibujable{
     protected int x, y, velocidad;
     protected Image imagen;
     protected int vida;

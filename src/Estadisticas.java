@@ -3,7 +3,7 @@ import java.util.*;
 import java.awt.*;
 import java.util.List;
 
-public class Estadisticas {
+public class Estadisticas{
     private static final String STATS_FILE = "stats.dat";
 
     public static class PlayerStats implements Serializable {
@@ -51,18 +51,6 @@ public class Estadisticas {
             stats = new ArrayList<>();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-        }
-    }
-
-    public void drawStats(Graphics g, int yOffset) {
-        g.setColor(Color.WHITE);
-        g.setFont(new Font("Arial", Font.BOLD, 20));
-        g.drawString("Récords de todos los jugadores:", 150, yOffset);
-        g.setFont(new Font("Arial", Font.PLAIN, 18));
-        int y = yOffset + 30;
-        for (PlayerStats stat : stats) {
-            g.drawString(stat.nombre + ": " + stat.statEnemigosDestruidos + " enemigos, nivel " + stat.nivelAlcanzado + ", " + stat.powerUpsUsados + " power-ups", 150, y);
-            y += 25;
         }
     }
 }

@@ -2,7 +2,7 @@ import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
-        String nombre = JOptionPane.showInputDialog(null, "Ingresá tu nombre:");
+        String nombre = EntradaUsuario.pedirNombreJugador();
 
         String[] dificultades = {"Fácil", "Medio", "Difícil"};
         String dificultadSeleccionada = (String) JOptionPane.showInputDialog(

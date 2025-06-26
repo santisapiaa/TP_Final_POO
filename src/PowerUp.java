@@ -2,7 +2,7 @@ import java.awt.*;
 import java.util.Random;
 import javax.swing.*;
 
-public class PowerUp {
+public class PowerUp implements IDibujable{
     public enum Tipo { ESCUDO, DISPARO_RAPIDO, DISPARO_TRIPLE }
 
     private int x, y;
