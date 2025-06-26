@@ -1,9 +1,9 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class BasicEnemy extends Enemy {
-    public BasicEnemy(int x, int y, int speed) {
-        super(x, y, speed, 1);
+public class EnemigoBasico extends Enemigo {
+    public EnemigoBasico(int x, int y, int velocidad) {
+        super(x, y, velocidad / 2, 1);
         this.imagen = new ImageIcon(getClass().getResource("/assets/enemy.png")).getImage();
     }
 }

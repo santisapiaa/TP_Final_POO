@@ -15,14 +15,14 @@ public class Main {
                 dificultades[0]
         );
 
-        Difficulty difficulty = switch (dificultadSeleccionada) {
-            case "Medio" -> Difficulty.MEDIO;
-            case "Difícil" -> Difficulty.DIFICIL;
-            default -> Difficulty.FACIL;
+        Dificultad dificultad = switch (dificultadSeleccionada) {
+            case "Medio" -> Dificultad.MEDIO;
+            case "Difícil" -> Dificultad.DIFICIL;
+            default -> Dificultad.FACIL;
         };
 
         JFrame frame = new JFrame("Galaga");
-        GamePanel panel = new GamePanel(nombre, difficulty);
+        PanelDeJuego panel = new PanelDeJuego(nombre, dificultad);
         frame.add(panel);
         frame.setSize(600, 800);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

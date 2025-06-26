@@ -21,11 +21,11 @@ public class PowerUp {
         }
     }
 
-    public void move() {
+    public void mover() {
         y += 2;
     }
 
-    public void draw(Graphics g) {
+    public void dibujar(Graphics g) {
         g.drawImage(imagen, x, y, 30, 30, null);
     }
 

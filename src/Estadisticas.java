@@ -3,40 +3,39 @@ import java.util.*;
 import java.awt.*;
 import java.util.List;
 
-public class StatsManager {
+public class Estadisticas {
     private static final String STATS_FILE = "stats.dat";
 
-    // Hacer PlayerStats public static para que sea accesible desde otras clases
     public static class PlayerStats implements Serializable {
-        String name;
-        int enemiesDestroyed;
-        int levelReached;
-        int powerUpsUsed;
+        String nombre;
+        int statEnemigosDestruidos;
+        int nivelAlcanzado;
+        int powerUpsUsados;
 
-        PlayerStats(String name, int enemiesDestroyed, int levelReached, int powerUpsUsed) {
-            this.name = name;
-            this.enemiesDestroyed = enemiesDestroyed;
-            this.levelReached = levelReached;
-            this.powerUpsUsed = powerUpsUsed;
+        PlayerStats(String nombre, int statEnemigosDestruidos, int nivelAlcanzado, int powerUpsUsados) {
+            this.nombre = nombre;
+            this.statEnemigosDestruidos = statEnemigosDestruidos;
+            this.nivelAlcanzado = nivelAlcanzado;
+            this.powerUpsUsados = powerUpsUsados;
         }
     }
 
     protected List<PlayerStats> stats;
 
-    public StatsManager() {
+    public Estadisticas() {
         stats = new ArrayList<>();
         loadStats();
     }
 
-    public void saveStats(String name, int enemiesDestroyed, int levelReached, int powerUpsUsed) {
+    public void saveStats(String nombre, int statEnemigosDestruidos, int nivelAlcanzado, int powerUpsUsados) {
         // Verifica si el último registro es idéntico para evitar duplicados
-        if (!stats.isEmpty() && stats.get(stats.size() - 1).name.equals(name) &&
-                stats.get(stats.size() - 1).enemiesDestroyed == enemiesDestroyed &&
-                stats.get(stats.size() - 1).levelReached == levelReached &&
-                stats.get(stats.size() - 1).powerUpsUsed == powerUpsUsed) {
+        if (!stats.isEmpty() && stats.get(stats.size() - 1).nombre.equals(nombre) &&
+                stats.get(stats.size() - 1).statEnemigosDestruidos == statEnemigosDestruidos &&
+                stats.get(stats.size() - 1).nivelAlcanzado == nivelAlcanzado &&
+                stats.get(stats.size() - 1).powerUpsUsados == powerUpsUsados) {
             return; // No guarda si es duplicado
         }
-        stats.add(new PlayerStats(name, enemiesDestroyed, levelReached, powerUpsUsed));
+        stats.add(new PlayerStats(nombre, statEnemigosDestruidos, nivelAlcanzado, powerUpsUsados));
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(STATS_FILE))) {
             oos.writeObject(stats);
         } catch (IOException e) {
@@ -62,7 +61,7 @@ public class StatsManager {
         g.setFont(new Font("Arial", Font.PLAIN, 18));
         int y = yOffset + 30;
         for (PlayerStats stat : stats) {
-            g.drawString(stat.name + ": " + stat.enemiesDestroyed + " enemigos, nivel " + stat.levelReached + ", " + stat.powerUpsUsed + " power-ups", 150, y);
+            g.drawString(stat.nombre + ": " + stat.statEnemigosDestruidos + " enemigos, nivel " + stat.nivelAlcanzado + ", " + stat.powerUpsUsados + " power-ups", 150, y);
             y += 25;
         }
     }

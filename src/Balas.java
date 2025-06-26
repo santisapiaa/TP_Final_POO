@@ -1,16 +1,16 @@
 import java.awt.*;
 
-public class Bullet {
+public class Balas {
     private int x, y;
 
-    public Bullet(int x, int y) {
+    public Balas(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
-    public void move() { y -= 7; }
+    public void mover() { y -= 7; }
 
-    public void draw(Graphics g) {
+    public void dibujar(Graphics g) {
         g.setColor(Color.YELLOW);
         g.fillRect(x, y, 8, 16);
     }
